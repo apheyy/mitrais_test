@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: mitrais
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass123
+    ports:
+      - "5432:5432"
+    networks:
+      - mynetwork
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  # Golang API Container
+  api:
+    build:
+      context: ./
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: pass123
+      DB_NAME: mitrais
+    ports:
+      - "8000:8000"
+    networks:
+      - mynetwork
+    depends_on:
+      - db
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  pg_data:
